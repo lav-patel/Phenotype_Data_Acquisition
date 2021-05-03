@@ -53,12 +53,11 @@ check: autopep autoblack lint cc nosetest-and-doctest
 run:
 	. venv/bin/activate && \
 	which python && \
-	OUTPUT_DIR=~/n3c/output && \
-	mkdir -p ${OUTPUT_DIR}/DATAFILES && \
+	mkdir -p ~/n3c/output/DATAFILES && \
 	python db_exp.py --config config.ini --database oracle  \
 	--phenotype  ../../PhenotypeScripts/N3C_phenotype_pcornet_oracle.sql \
 	--extract ../../ExtractScripts/N3C_extract_pcornet6_oracle.sql \
-	--output_dir ${OUTPUT_DIR} --zip \
+	--output_dir ~/n3c/output  --zip \
 	--debug
 	#--sftp
 
