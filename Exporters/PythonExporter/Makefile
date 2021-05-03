@@ -53,10 +53,13 @@ check: autopep autoblack lint cc nosetest-and-doctest
 run:
 	which python
 	#. ./.env or gitlab will import env vairable through password env password manager
+	OUTPUT_DIR=~/n3c/output && \
+	mkdir -p ${OUTPUT_DIR}/DATAFILES && \
 	python db_exp.py --config config.ini --database oracle  \
 	--phenotype  ../../PhenotypeScripts/N3C_phenotype_pcornet_oracle.sql \
-	--extract ../../ExtractScripts/N3C_extract_pcornet_oracle.sql \
-	--output_dir ~/n3c/output --zip 
+	--extract ../../ExtractScripts/N3C_extract_pcornet6_oracle.sql \
+	--output_dir ${OUTPUT_DIR} --zip \
+	--debug
 	#--sftp
 
 clean: venv_clear
