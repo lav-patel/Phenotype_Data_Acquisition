@@ -51,8 +51,8 @@ static:
 check: autopep autoblack lint cc nosetest-and-doctest
 
 run:
-	which python
-	#. ./.env or gitlab will import env vairable through password env password manager
+	. venv/bin/activate && \
+	which python && \
 	OUTPUT_DIR=~/n3c/output && \
 	mkdir -p ${OUTPUT_DIR}/DATAFILES && \
 	python db_exp.py --config config.ini --database oracle  \
