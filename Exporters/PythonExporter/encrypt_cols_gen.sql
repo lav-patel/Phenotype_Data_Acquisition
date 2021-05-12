@@ -21,6 +21,7 @@ where owner = 'PCORNET_CDM'
                         ,'HASH_TOKEN'
                         ,'IMMUNIZATION'
                         ,'LAB_RESULT_CM'
+                        ,'LDS_ADDRESS_HISTORY'
                         ,'MED_ADMIN'
                         ,'OBS_CLIN'
                         ,'OBS_GEN'
@@ -32,7 +33,7 @@ where owner = 'PCORNET_CDM'
                         ,'VITAL'
                         )
 )
-select 'DROP TABLE PCORNET_CDM_N3C.'||table_name || ' purge ;' from cdm_tables_w_patid
+select 'DROP TABLE PCORNET_CDM_N3C.'||table_name || ' purge ;' from cdm_tables_w_patid order by table_name
 ;
 
 ------------------------------------------------------------------------------------------------------------------------------
@@ -64,6 +65,7 @@ where owner = 'PCORNET_CDM'
                         ,'HASH_TOKEN'
                         ,'IMMUNIZATION'
                         ,'LAB_RESULT_CM'
+                        ,'LDS_ADDRESS_HISTORY'
                         ,'MED_ADMIN'
                         ,'OBS_CLIN'
                         ,'OBS_GEN'
