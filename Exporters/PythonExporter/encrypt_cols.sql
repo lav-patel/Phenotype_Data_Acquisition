@@ -1,3 +1,5 @@
+define encrypting_password=&1;
+
 WHENEVER SQLERROR CONTINUE;
 DROP TABLE PCORNET_CDM_N3C.DEMOGRAPHIC purge ;
 DROP TABLE PCORNET_CDM_N3C.CDM_STATUS purge ;
@@ -54,3 +56,4 @@ select  case when count(*) = 0 then 0 else 1/0 END pass_fail from PCORNET_CDM_N3
 select  case when count(*) = 0 then 0 else 1/0 END pass_fail from PCORNET_CDM_N3C.OBS_GEN      where trim(OBSGEN_PROVIDERID) is not null;
 select  case when count(*) = 0 then 0 else 1/0 END pass_fail from PCORNET_CDM_N3C.PRESCRIBING  where trim(rx_providerid) is not null;
 
+exit;

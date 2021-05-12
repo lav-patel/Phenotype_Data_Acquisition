@@ -61,4 +61,7 @@ run:
 	--debug
 	#--sftp
 
+encrypt_cols:
+	sqlplus ${USER_NAME}/${USER_PASSWORD}@${ORACLE_SID} @encrypt_cols.sql ${encrypting_password}
+
 clean: venv_clear
