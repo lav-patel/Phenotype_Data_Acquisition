@@ -1,7 +1,9 @@
 WHENEVER SQLERROR CONTINUE;
 drop table n3c_gen_sql;
 drop table n3c_cdm_tables;
+drop table n3c_gen_create_sql;
 WHENEVER SQLERROR EXIT SQL.SQLCODE;
+
 
 ------------------------------------------------------------------------------------------------------------------------------
 --- CDM tables to include
@@ -34,18 +36,24 @@ Insert into N3C_CDM_TABLES (TABLE_NAME) values ('PROVIDER');
 Insert into N3C_CDM_TABLES (TABLE_NAME) values ('PRO_CM');
 Insert into N3C_CDM_TABLES (TABLE_NAME) values ('VITAL');
 
+
 ------------------------------------------------------------------------------------------------------------------------------
---- Save gen sql in table
+---- Save gen sql in table
+-- replace *** with &
+-- replace " with '
 ------------------------------------------------------------------------------------------------------------------------------
 create table n3c_gen_sql(
     sql_str varchar(4000)
 );
 
-insert into n3c_gen_sql (select 'define encrypting_password=&1;' from dual);
+insert into n3c_gen_sql (select 'define encrypting_password=***1;' from dual);
+
+
 ------------------------------------------------------------------------------------------------------------------------------
 --- DROP TABLE SQL
 ------------------------------------------------------------------------------------------------------------------------------
-insert into n3c_gen_sql (select 'WHENEVER SQLERROR CONTINUE ;' from dual);
+insert into n3c_gen_sql (select '-- drop tables' from dual);
+insert into n3c_gen_sql (select 'WHENEVER SQLERROR CONTINUE;' from dual);
 
 insert into n3c_gen_sql
 with cdm_tables_w_patid
@@ -56,64 +64,91 @@ from dba_tab_cols
 where owner = 'PCORNET_CDM'
     and table_name in ( select table_name from N3C_CDM_TABLES)
 )
-select 'DROP TABLE PCORNET_CDM_N3C.'||table_name || ' purge ;' from cdm_tables_w_patid order by table_name
+select 'DROP TABLE '||table_name || ' purge ;' from cdm_tables_w_patid order by table_name
 ;
 
 insert into n3c_gen_sql (select 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' from dual);
 
 commit;
+
+
 ------------------------------------------------------------------------------------------------------------------------------
 --- CREATE TABLE SQL
------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+create table n3c_gen_create_sql(
+    sql_str varchar(4000)
+);
+insert into n3c_gen_create_sql (select '-- create tables' from dual);
+insert into n3c_gen_create_sql
 select 
-''''||table_name || '''' table_name
-from dba_tables
-where owner='PCORNET_CDM_N3C'
-order by table_name;
-
-with cdm_tables_w_patid
-as
-(
-select distinct table_name
-from dba_tab_cols
-where owner = 'PCORNET_CDM'
-    and table_name in (
-                        'CDM_STATUS'
-                        ,'CONDITION'
-                        ,'DEATH'
-                        ,'DEATH_CAUSE'
-                        ,'DEMOGRAPHIC'
-                        ,'DIAGNOSIS'
-                        ,'DISPENSING'
-                        ,'ENCOUNTER'
-                        ,'ENROLLMENT'
-                        ,'HARVEST'
-                        ,'HASH_TOKEN'
-                        ,'IMMUNIZATION'
-                        ,'LAB_RESULT_CM'
-                        ,'LDS_ADDRESS_HISTORY'
-                        ,'MED_ADMIN'
-                        ,'OBS_CLIN'
-                        ,'OBS_GEN'
-                        ,'PCORNET_TRIAL'
-                        ,'PRESCRIBING'
-                        ,'PROCEDURES'
-                        ,'PROVIDER'
-                        ,'PRO_CM'
-                        ,'VITAL'
-                        )
-    and column_name = 'PATID'
-)
-select 
-'create table PCORNET_CDM_N3C.'|| table_name || ' nologging parallel as select ' || 
+'create table '|| table_name || ' nologging parallel as select ' || 
 LISTAGG(column_name, ', ') WITHIN GROUP (ORDER BY column_id)
 || ' from '||owner||'.'|| table_name 
 ||' cdm join NIGHTHERONDATA.patient_mapping he on cdm.patid = he.patient_num where he.patient_ide_source='
 || '''' ||'Epic@kumed.com' ||'''' || ' ;'
 from dba_tab_cols
 where owner = 'PCORNET_CDM'
-    and table_name in (select table_name from cdm_tables_w_patid)
+    and table_name in (select table_name from N3C_CDM_TABLES)
     and owner = 'PCORNET_CDM'
 group by owner,table_name
 order by owner,table_name
 ;
+
+
+insert into n3c_gen_sql
+select
+--sql_str,
+replace(
+replace(
+replace(
+replace(
+replace(
+replace(
+replace(
+replace(
+replace(
+replace(
+replace(
+replace(
+replace(
+replace(sql_str,
+     'TOKEN_ENCRYPTION_KEY,'    ,'')
+    ,'PROVIDERID,'               ,'standard_HASH("***encrypting_password"||PROVIDERID,"SHA1") PROVIDERID,')
+    ,'PROVIDER_NPI,'             ,'standard_HASH("***encrypting_password"||PROVIDER_NPI,"SHA1") PROVIDER_NPI,')
+    ,'PATID,'                    ,'standard_HASH("***encrypting_password"||he.patient_ide,"SHA1") PATID,')
+    ,'FACILITY_LOCATION,'        ,'standard_HASH("***encrypting_password"||FACILITY_LOCATION,"SHA1") FACILITY_LOCATION,')
+    ,'FACILITYID,'               ,'standard_HASH("***encrypting_password"||FACILITYID,"SHA1") FACILITYID,')
+    ,'RAW_PAYER_NAME_PRIMARY,'   ,'standard_HASH("***encrypting_password"||RAW_PAYER_NAME_PRIMARY,"SHA1") RAW_PAYER_NAME_PRIMARY,')
+    ,'RAW_PAYER_ID_PRIMARY,'     ,'standard_HASH("***encrypting_password"||RAW_PAYER_ID_PRIMARY,"SHA1") RAW_PAYER_ID_PRIMARY,')
+    ,'RAW_PAYER_NAME_SECONDARY,' ,'standard_HASH("***encrypting_password"||RAW_PAYER_NAME_SECONDARY,"SHA1" RAW_PAYER_NAME_SECONDARY,')
+    ,'RAW_PAYER_ID_SECONDARY,'   ,'standard_HASH("***encrypting_password"||RAW_PAYER_ID_SECONDARY,"SHA1") RAW_PAYER_ID_SECONDARY,')
+    ,'ADDRESS_USE,'              ,'standard_HASH("***encrypting_password"||ADDRESS_USE,"SHA1") ADDRESS_USE,')
+    ,'ADDRESS_PREFERRED,'        ,'standard_HASH("***encrypting_password"||ADDRESS_PREFERRED,"SHA1") ADDRESS_PREFERRED,')
+    ,'ADDRESS_CITY,'             ,'standard_HASH("***encrypting_password"||ADDRESS_CITY,"SHA1") ADDRESS_CITY,')
+    ,'"'                         ,'''')
+sql_str
+from n3c_gen_create_sql;
+commit;
+
+
+------------------------------------------------------------------------------------------------------------------------------
+--- test cols
+------------------------------------------------------------------------------------------------------------------------------
+insert into n3c_gen_sql (select '-- test columns' from dual);
+insert into n3c_gen_sql (select 
+'select  case when count(*) = 0 then 0 else 1/0 END pass_fail from IMMUNIZATION where trim(VX_PROVIDERID) is not null;' from dual);
+insert into n3c_gen_sql (select 
+'select  case when count(*) = 0 then 0 else 1/0 END pass_fail from MED_ADMIN    where trim(medadmin_providerid) is not null;' from dual);
+insert into n3c_gen_sql (select 
+'select  case when count(*) = 0 then 0 else 1/0 END pass_fail from OBS_CLIN     where trim(OBSCLIN_PROVIDERID) is not null;' from dual);
+insert into n3c_gen_sql (select 
+'select  case when count(*) = 0 then 0 else 1/0 END pass_fail from OBS_GEN      where trim(OBSGEN_PROVIDERID) is not null;' from dual);
+insert into n3c_gen_sql (select 
+'select  case when count(*) = 0 then 0 else 1/0 END pass_fail from PRESCRIBING  where trim(rx_providerid) is not null;' from dual);
+
+insert into n3c_gen_sql (select 'exit;' from dual);
+commit;
+exit;
+
+select replace(sql_str,'***','&')
+from n3c_gen_sql;
