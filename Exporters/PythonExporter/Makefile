@@ -2,6 +2,7 @@ venv_clear:
 	# "deleting python virtual env"
 	rm -rf venv
 
+
 venv: venv_clear
 	# "creating python virtual env"
 	python -m venv venv
