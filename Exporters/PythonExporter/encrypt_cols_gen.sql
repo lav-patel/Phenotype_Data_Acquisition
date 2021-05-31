@@ -147,7 +147,7 @@ replace(
 replace(
 replace(
 replace(sql_str,
-     'TOKEN_ENCRYPTION_KEY,'    ,'TOKEN_ENCRYPTION_KEY,')
+     'TOKEN_ENCRYPTION_KEY,'    ,'')
     ,' PROVIDERID,'               ,' standard_HASH("***encrypting_password"||PROVIDERID,"SHA1") PROVIDERID,')
     ,'PROVIDER_NPI,'             ,'standard_HASH("***encrypting_password"||PROVIDER_NPI,"SHA1") PROVIDER_NPI,')
     ,'PATID,'                    ,'standard_HASH("***encrypting_password"||he.patient_ide,"SHA1") PATID,')
