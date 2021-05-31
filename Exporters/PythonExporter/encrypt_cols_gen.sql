@@ -132,7 +132,11 @@ order by owner,table_name
 
 insert into n3c_gen_sql
 select
---sql_str,
+replace(
+replace(
+replace(
+replace(
+replace(
 replace(
 replace(
 replace(
@@ -163,26 +167,14 @@ replace(sql_str,
     ,'ADDRESS_CITY,'             ,'standard_HASH("***encrypting_password"||ADDRESS_CITY,"SHA1") ADDRESS_CITY,')
     ,'ENCOUNTERID,'              ,'standard_HASH("***encrypting_password"||ENCOUNTERID,"SHA1") ENCOUNTERID,')
     ,'VX_PROVIDERID,'            ,'standard_HASH("***encrypting_password"||VX_PROVIDERID,"SHA1") VX_PROVIDERID,')
+    ,'MEDADMIN_PROVIDERID,'      ,'standard_HASH("***encrypting_password"||MEDADMIN_PROVIDERID,"SHA1") MEDADMIN_PROVIDERID,')
+    ,'OBSCLIN_PROVIDERID,'       ,'standard_HASH("***encrypting_password"||OBSCLIN_PROVIDERID,"SHA1") OBSCLIN_PROVIDERID,')
+    ,'OBSGEN_PROVIDERID,'        ,'standard_HASH("***encrypting_password"||OBSGEN_PROVIDERID,"SHA1") OBSGEN_PROVIDERID,')
+    ,'RX_PROVIDERID,'            ,'standard_HASH("***encrypting_password"||RX_PROVIDERID,"SHA1") RX_PROVIDERID,')
     ,'"'                         ,'''')
 sql_str
 from n3c_gen_create_sql;
-commit;
 
-
-------------------------------------------------------------------------------------------------------------------------------
---- test cols
-------------------------------------------------------------------------------------------------------------------------------
-insert into n3c_gen_sql (select '-- test columns' from dual);
-insert into n3c_gen_sql (select 
-'select  case when count(*) = 0 then 0 else 1/0 END pass_fail from IMMUNIZATION where trim(VX_PROVIDERID) is not null;' from dual);
-insert into n3c_gen_sql (select 
-'select  case when count(*) = 0 then 0 else 1/0 END pass_fail from MED_ADMIN    where trim(medadmin_providerid) is not null;' from dual);
-insert into n3c_gen_sql (select 
-'select  case when count(*) = 0 then 0 else 1/0 END pass_fail from OBS_CLIN     where trim(OBSCLIN_PROVIDERID) is not null;' from dual);
-insert into n3c_gen_sql (select 
-'select  case when count(*) = 0 then 0 else 1/0 END pass_fail from OBS_GEN      where trim(OBSGEN_PROVIDERID) is not null;' from dual);
-insert into n3c_gen_sql (select 
-'select  case when count(*) = 0 then 0 else 1/0 END pass_fail from PRESCRIBING  where trim(rx_providerid) is not null;' from dual);
 
 insert into n3c_gen_sql (select 'exit;' from dual);
 commit;
