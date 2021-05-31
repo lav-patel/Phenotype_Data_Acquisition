@@ -2,6 +2,7 @@ WHENEVER SQLERROR CONTINUE;
 drop table n3c_gen_sql;
 drop table n3c_cdm_tables;
 drop table n3c_gen_create_sql;
+drop table n3c_gen_sql_export;
 WHENEVER SQLERROR EXIT SQL.SQLCODE;
 
 
@@ -80,15 +81,51 @@ create table n3c_gen_create_sql(
 );
 insert into n3c_gen_create_sql (select '-- create tables' from dual);
 insert into n3c_gen_create_sql
+with cdm_tables_w_patid
+as
+(
+select distinct table_name
+from dba_tab_cols
+where owner = 'PCORNET_CDM'
+    and table_name in (select table_name from N3C_CDM_TABLES)
+    and column_name = 'PATID'
+)
 select 
 'create table '|| table_name || ' nologging parallel as select ' || 
 LISTAGG(column_name, ', ') WITHIN GROUP (ORDER BY column_id)
 || ' from '||owner||'.'|| table_name 
 ||' cdm join NIGHTHERONDATA.patient_mapping he on cdm.patid = he.patient_num where he.patient_ide_source='
-|| '''' ||'Epic@kumed.com' ||'''' || ' ;'
+|| '''' ||'Epic@kumed.com' ||'''' || ' ;' sql_str
+from dba_tab_cols
+where owner = 'PCORNET_CDM'
+    and table_name in (select table_name from cdm_tables_w_patid)
+    and owner = 'PCORNET_CDM'
+group by owner,table_name
+order by owner,table_name
+;
+insert into n3c_gen_create_sql
+with cdm_tables_w_patid
+as
+(
+select distinct table_name
 from dba_tab_cols
 where owner = 'PCORNET_CDM'
     and table_name in (select table_name from N3C_CDM_TABLES)
+    and column_name = 'PATID'
+)
+,cdm_tables_wo_patid
+as (
+select table_name from N3C_CDM_TABLES where table_name not in (select table_name from cdm_tables_w_patid)
+)
+select 
+'create table '|| table_name || ' nologging parallel as select ' || 
+LISTAGG(column_name, ', ') WITHIN GROUP (ORDER BY column_id)
+|| ' from '||owner||'.'|| table_name 
+||' cdm join NIGHTHERONDATA.patient_mapping he on cdm.patid = he.patient_num where he.patient_ide_source='
+|| '''' ||'Epic@kumed.com' ||'''' || ' ;' sql_str
+from dba_tab_cols
+where owner = 'PCORNET_CDM'
+    and table_name in (select table_name from cdm_tables_wo_patid)
     and owner = 'PCORNET_CDM'
 group by owner,table_name
 order by owner,table_name
@@ -150,5 +187,7 @@ insert into n3c_gen_sql (select 'exit;' from dual);
 commit;
 exit;
 
+create table n3c_gen_sql_export
+as
 select replace(sql_str,'***','&')
 from n3c_gen_sql;
