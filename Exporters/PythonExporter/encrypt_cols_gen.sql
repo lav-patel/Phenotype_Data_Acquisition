@@ -120,9 +120,7 @@ select table_name from N3C_CDM_TABLES where table_name not in (select table_name
 select 
 'create table '|| table_name || ' nologging parallel as select ' || 
 LISTAGG(column_name, ', ') WITHIN GROUP (ORDER BY column_id)
-|| ' from '||owner||'.'|| table_name 
-||' cdm join NIGHTHERONDATA.patient_mapping he on cdm.patid = he.patient_num where he.patient_ide_source='
-|| '''' ||'Epic@kumed.com' ||'''' || ' ;' sql_str
+|| ' from '||owner||'.'|| table_name || ' ;' sql_str
 from dba_tab_cols
 where owner = 'PCORNET_CDM'
     and table_name in (select table_name from cdm_tables_wo_patid)
@@ -149,16 +147,16 @@ replace(
 replace(
 replace(
 replace(sql_str,
-     'TOKEN_ENCRYPTION_KEY,'    ,'')
-    ,'PROVIDERID,'               ,'standard_HASH("***encrypting_password"||PROVIDERID,"SHA1") PROVIDERID,')
+     'TOKEN_ENCRYPTION_KEY,'    ,'TOKEN_ENCRYPTION_KEY,')
+    ,' PROVIDERID,'               ,' standard_HASH("***encrypting_password"||PROVIDERID,"SHA1") PROVIDERID,')
     ,'PROVIDER_NPI,'             ,'standard_HASH("***encrypting_password"||PROVIDER_NPI,"SHA1") PROVIDER_NPI,')
     ,'PATID,'                    ,'standard_HASH("***encrypting_password"||he.patient_ide,"SHA1") PATID,')
     ,'FACILITY_LOCATION,'        ,'standard_HASH("***encrypting_password"||FACILITY_LOCATION,"SHA1") FACILITY_LOCATION,')
     ,'FACILITYID,'               ,'standard_HASH("***encrypting_password"||FACILITYID,"SHA1") FACILITYID,')
     ,'RAW_PAYER_NAME_PRIMARY,'   ,'standard_HASH("***encrypting_password"||RAW_PAYER_NAME_PRIMARY,"SHA1") RAW_PAYER_NAME_PRIMARY,')
     ,'RAW_PAYER_ID_PRIMARY,'     ,'standard_HASH("***encrypting_password"||RAW_PAYER_ID_PRIMARY,"SHA1") RAW_PAYER_ID_PRIMARY,')
-    ,'RAW_PAYER_NAME_SECONDARY,' ,'standard_HASH("***encrypting_password"||RAW_PAYER_NAME_SECONDARY,"SHA1" RAW_PAYER_NAME_SECONDARY,')
-    ,'RAW_PAYER_ID_SECONDARY,'   ,'standard_HASH("***encrypting_password"||RAW_PAYER_ID_SECONDARY,"SHA1") RAW_PAYER_ID_SECONDARY,')
+    ,'RAW_PAYER_NAME_SECONDARY,' ,'standard_HASH("***encrypting_password"||RAW_PAYER_NAME_SECONDARY,"SHA1") RAW_PAYER_NAME_SECONDARY,')
+    ,'RAW_PAYER_ID_SECONDARY'   ,'standard_HASH("***encrypting_password"||RAW_PAYER_ID_SECONDARY,"SHA1") RAW_PAYER_ID_SECONDARY')
     ,'ADDRESS_USE,'              ,'standard_HASH("***encrypting_password"||ADDRESS_USE,"SHA1") ADDRESS_USE,')
     ,'ADDRESS_PREFERRED,'        ,'standard_HASH("***encrypting_password"||ADDRESS_PREFERRED,"SHA1") ADDRESS_PREFERRED,')
     ,'ADDRESS_CITY,'             ,'standard_HASH("***encrypting_password"||ADDRESS_CITY,"SHA1") ADDRESS_CITY,')
@@ -185,9 +183,12 @@ insert into n3c_gen_sql (select
 
 insert into n3c_gen_sql (select 'exit;' from dual);
 commit;
-exit;
+
 
 create table n3c_gen_sql_export
 as
-select replace(sql_str,'***','&')
+select replace(sql_str,'***','&') sql_str
 from n3c_gen_sql;
+exit;
+
+
