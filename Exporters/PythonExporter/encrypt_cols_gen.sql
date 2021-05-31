@@ -146,6 +146,7 @@ replace(
 replace(
 replace(
 replace(
+replace(
 replace(sql_str,
      'TOKEN_ENCRYPTION_KEY,'    ,'')
     ,' PROVIDERID,'               ,' standard_HASH("***encrypting_password"||PROVIDERID,"SHA1") PROVIDERID,')
@@ -160,6 +161,7 @@ replace(sql_str,
     ,'ADDRESS_USE,'              ,'standard_HASH("***encrypting_password"||ADDRESS_USE,"SHA1") ADDRESS_USE,')
     ,'ADDRESS_PREFERRED,'        ,'standard_HASH("***encrypting_password"||ADDRESS_PREFERRED,"SHA1") ADDRESS_PREFERRED,')
     ,'ADDRESS_CITY,'             ,'standard_HASH("***encrypting_password"||ADDRESS_CITY,"SHA1") ADDRESS_CITY,')
+    ,'ENCOUNTERID,'              ,'standard_HASH("***encrypting_password"||ENCOUNTERID,"SHA1") ENCOUNTERID,')
     ,'"'                         ,'''')
 sql_str
 from n3c_gen_create_sql;
