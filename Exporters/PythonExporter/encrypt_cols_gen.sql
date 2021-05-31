@@ -162,6 +162,7 @@ replace(sql_str,
     ,'ADDRESS_PREFERRED,'        ,'standard_HASH("***encrypting_password"||ADDRESS_PREFERRED,"SHA1") ADDRESS_PREFERRED,')
     ,'ADDRESS_CITY,'             ,'standard_HASH("***encrypting_password"||ADDRESS_CITY,"SHA1") ADDRESS_CITY,')
     ,'ENCOUNTERID,'              ,'standard_HASH("***encrypting_password"||ENCOUNTERID,"SHA1") ENCOUNTERID,')
+    ,'VX_PROVIDERID,'            ,'standard_HASH("***encrypting_password"||VX_PROVIDERID,"SHA1") VX_PROVIDERID,')
     ,'"'                         ,'''')
 sql_str
 from n3c_gen_create_sql;
