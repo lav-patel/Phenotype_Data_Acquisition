@@ -17,6 +17,10 @@ encrypt_cols:
 	sqlplus ${USER_NAME}/${USER_PASSWORD}@${ORACLE_SID} @encrypt_cols.sql ${encrypting_password}
 
 
+encrypt_zip_file:
+	zip -P ${n3c_zip_file_encryption_password_shared} KUMC_pcornet_${d1}.zip.zip KUMC_pcornet*.zip
+
+
 run: venv encrypt_cols
 	. venv/bin/activate && \
 	which python && \
