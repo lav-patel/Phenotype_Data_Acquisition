@@ -48,6 +48,7 @@ create table n3c_gen_sql(
 );
 
 insert into n3c_gen_sql (select 'define encrypting_password=***1;' from dual);
+insert into n3c_gen_sql (select 'define src_schema=***2;' from dual);
 
 
 ------------------------------------------------------------------------------------------------------------------------------
@@ -93,7 +94,7 @@ where owner = 'PCORNET_CDM'
 select 
 'create table '|| table_name || ' nologging parallel as select ' || 
 LISTAGG(column_name, ', ') WITHIN GROUP (ORDER BY column_id)
-|| ' from '||owner||'.'|| table_name 
+|| ' from '||'***src_schema'||'.'|| table_name 
 ||' cdm join NIGHTHERONDATA.patient_mapping he on cdm.patid = he.patient_num where he.patient_ide_source='
 || '''' ||'Epic@kumed.com' ||'''' || ' ;' sql_str
 from dba_tab_cols
@@ -120,7 +121,7 @@ select table_name from N3C_CDM_TABLES where table_name not in (select table_name
 select 
 'create table '|| table_name || ' nologging parallel as select ' || 
 LISTAGG(column_name, ', ') WITHIN GROUP (ORDER BY column_id)
-|| ' from '||owner||'.'|| table_name || ' ;' sql_str
+|| ' from '||'***src_schema'||'.'|| table_name || ' ;' sql_str
 from dba_tab_cols
 where owner = 'PCORNET_CDM'
     and table_name in (select table_name from cdm_tables_wo_patid)
