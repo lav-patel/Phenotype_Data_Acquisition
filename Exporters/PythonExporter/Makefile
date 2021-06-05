@@ -14,7 +14,7 @@ venv: venv_clear
 
 
 encrypt_cols:
-	sqlplus ${USER_NAME}/${USER_PASSWORD}@${ORACLE_SID} @encrypt_cols.sql ${encrypting_password}
+	sqlplus ${USER_NAME}/${USER_PASSWORD}@${ORACLE_SID} @encrypt_cols.sql ${encrypting_password} PCORNET_CDM
 
 
 encrypt_zip_file:
