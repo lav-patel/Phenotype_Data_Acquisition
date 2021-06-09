@@ -151,6 +151,7 @@ replace(
 replace(
 replace(
 replace(
+replace(
 replace(sql_str,
      'TOKEN_ENCRYPTION_KEY,'    ,'')
     ,' PROVIDERID,'               ,' standard_HASH("***encrypting_password"||PROVIDERID,"SHA1") PROVIDERID,')
@@ -171,6 +172,8 @@ replace(sql_str,
     ,'OBSCLIN_PROVIDERID,'       ,'standard_HASH("***encrypting_password"||OBSCLIN_PROVIDERID,"SHA1") OBSCLIN_PROVIDERID,')
     ,'OBSGEN_PROVIDERID,'        ,'standard_HASH("***encrypting_password"||OBSGEN_PROVIDERID,"SHA1") OBSGEN_PROVIDERID,')
     ,'RX_PROVIDERID,'            ,'standard_HASH("***encrypting_password"||RX_PROVIDERID,"SHA1") RX_PROVIDERID,')
+    -- getting rid of fact counts and patient counts
+    ,'RAW_MEDADMIN_MED_NAME,'    ,'NVL(SUBSTR(RAW_MEDADMIN_MED_NAME, 0, INSTR(RAW_MEDADMIN_MED_NAME, "[")-1),RAW_MEDADMIN_MED_NAME) RAW_MEDADMIN_MED_NAME,')
     ,'"'                         ,'''')
 sql_str
 from n3c_gen_create_sql;
