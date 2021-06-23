@@ -179,6 +179,13 @@ sql_str
 from n3c_gen_create_sql;
 
 
+------------------------------------------------------------------------------------------------------------------------------
+--- TRUNCATE TABLE SQL
+------------------------------------------------------------------------------------------------------------------------------
+-- OBS_CLIN table is not being used by N3C, and it is giving parsing error, so truncating it.
+insert into n3c_gen_sql (select 'truncate table OBS_CLIN;' from dual);
+
+
 insert into n3c_gen_sql (select 'exit;' from dual);
 commit;
 
